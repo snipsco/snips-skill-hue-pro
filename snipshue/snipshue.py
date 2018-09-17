@@ -5,13 +5,12 @@ import requests
 import json
 import time
 from hue_setup import HueSetup
-from color_utils import colors
+from hue_scene import HueScenes
+
 
 
 class SnipsHue:
     """ Philips Hue skill for Snips. """
-
-    colormap = colors
 
     def __init__(self, hostname=None, username=None, locale=None):
         """ Initialisation.
@@ -35,110 +34,182 @@ class SnipsHue:
         self.lights_endpoint = url + "/lights"
         self.groups_endpoint = url + "/groups"
         self.config_endpoint = url + "/config"
+        self.scenes_endpoint = url + "/scenes"
+
+        # from [room_name] -> [light_ids]
         self.lights_from_room = self._get_rooms_lights()
+        # from [room_name] -> [room_id]
+        self.roomName_roomId = self._get_rooms_id()
 
-    def light_on(self, location=None):
-        """ Turn on Philips Hue lights in [location] """
+    #### section -> action handlers
+    def light_on(self, room=None):
+        print ("[HUE] turn on")
+        """ Turn on Philips Hue lights in [room] """
 
-        self._post_state_to_ids({"on": True}, self._get_light_ids_from_room(location))
+        # By default, turn on the light and set its brightness around 80% of the max
+        self._set_group_state({"on": True, "bri": 200}, self._get_group_id_from_room(room))
 
-    def light_off(self, location=None):
-        """ Turn off all Philips Hue lights in [location] """
+    def light_off(self, room=None):
+        print ("[HUE] turn off")
+        """ Turn off all Philips Hue lights in [room] """
 
-        self._post_state_to_ids({"on": False}, self._get_light_ids_from_room(location))
+        self._set_group_state({"on": False}, self._get_group_id_from_room(room))
 
-    def light_brightness(self, location=None, percent):
-        """ Set a specified brightness [percent] to a hue light in [location] """
-        brightness = int(round(percent * 255))
+    def light_brightness(self, percent, room=None):
+        print ("[HUE] set brightness")
+        """ Set a specified brightness [percent] to a hue light in [room] """
+        print percent
+        print type(percent)
+        brightness = int(round(percent * 254/100))
 
-        self._post_state_to_ids({"on": True, "bri": brightness}, self._get_light_ids_from_room(location))
+        self._set_group_state({"on": True, "bri": brightness}, self._get_group_id_from_room(room))
 
-    def light_color(self, location=None, color):
-        """ Set a specified [color] to a hue light in [location] """
-        hue = color_name.split('x')[0]
-        sat = color_name.split('x')[1]
+    def light_color(self, color_code, room=None):
+        print ("[HUE] set color")
+        """ Set a specified [color] to a hue light in [room] """
+        hue = int(color_code.split('x')[0])
+        sat = int(color_code.split('x')[1])
 
-        self._post_state_to_ids({"on": True, "sat": sat, "hue", hue}, self._get_light_ids_from_room(location))
+        self._set_group_state({"on": True, "sat": sat, "hue": hue}, self._get_group_id_from_room(room))
 
-    def light_scene(self, location=None, scene):
-        """ Set a specified [scene] to a hue light in [location] """
+    def light_scene(self, scene_code, room=None):
+        print ("[HUE] set scene")
+        """ Set a specified [scene] to a hue light in [room] """
+        bri = int(scene_code.split('x')[0])
+        hue = int(scene_code.split('x')[1])
+        sat = int(scene_code.split('x')[2])
+        
+        self._set_group_state({"on": True, "bri":bri, "hue":hue, "sat":sat}, self._get_group_id_from_room(room))
 
-        # more info
-
-
-    def light_up(self, location, percentage):
+    def light_up(self, percent, room=None):
+        print ("[HUE] shift up")
         """ Increase Philips Hue lights' intensity. """
-        brightness = int(round(percent * 255))
 
-        light_ids = self._get_light_ids_from_room(location)
-        lights_config = self._get_lights_config(light_ids)
+        cur_brightness = self._get_group_brightness(self._get_group_id_from_room(room))
+        delt = int(round(percent * 254/100))
 
-        for light_id in light_ids:
-            intensity = lights_config[light_id]["bri"]
+        if len(self._get_group_id_from_room(room)>0):
+        for key,val in cur_brightness:
+            new_bri = val + delt
 
-            intensity += brightness
+            if new_bri > 254:
+                new_bri = 254
+            if new_bri < 0:
+                new_bri = 0
+ 
+            self._put_group_state({"on": True, "bri": new_bri}, self._get_group_id_from_room(room)[key])
 
-            if intensity > 254:
-                intensity = 254
-            if intensity < 0:
-                intensity = 0
-                
-            self._post_state({"on": True, "bri": intensity}, light_id)
+        new_bri = bri + delt
 
-    def light_down(self, location, perentage):
-        """ Lower Philips Hue lights' intensity. """
-        brightness = int(round(percent * 255))
+        if new_bri > 254:
+            new_bri = 254
+        if new_bri < 0:
+            new_bri = 0
 
-        light_ids = self._get_light_ids_from_room(location)
-        lights_config = self._get_lights_config(light_ids)
+        self._put_group_state({"on": True, "bri": new_bri}, self._get_group_id_from_room(room))
 
-        for light_id in light_ids:
-            intensity = lights_config[light_id]["bri"]
-            if intensity < perentage:
-                intensity = 0
-            else:
-                intensity -= perentage
-            self._post_state({"bri": intensity}, light_id)
+    # def light_down(self, perentage, room=None):
+    #     print ("[HUE] shift down")
+    #     """ Lower Philips Hue lights' intensity. """
+    #     brightness = int(round(percent * 254))
 
-    def _post_state_to_ids(self, params, light_ids):
-        """ Post a state update to specyfied Philips Hue lights. """
+    #     light_ids = self._get_light_ids_from_room(room)
+    #     lights_config = self._get_lights_config(light_ids)
+
+    #     for light_id in light_ids:
+    #         intensity = lights_config[light_id]["bri"]
+    #         if intensity < perentage:
+    #             intensity = 0
+    #         else:
+    #             intensity -= perentage
+    #         self._post_state({"bri": intensity}, light_id)
+
+    #### section -> send command to device
+    # def _post_state_to_ids(self, params, light_ids):
+    #     """ Post a state update to specyfied Philips Hue lights. """
+    #     try:
+    #         for light_id in light_ids:
+    #             self._post_state(params, light_id)
+    #             time.sleep(0.2)
+    #     except Exception as e:
+    #         return
+
+    # def _post_state(self, params, light_id):
+    #     """ Post a state update to a given light.
+
+    #     :param params: Philips Hue request parameters.
+    #     :param light_id: Philips Hue light ID.
+    #     """
+    #     if (light_id is None) or (params is None):
+    #         return
+
+    #     print("[HUE] Setting state for light " +
+    #           str(light_id) + ": " + str(params))
+    #     try:
+    #         url = "{}/{}/state".format(self.lights_endpoint, light_id)
+    #         requests.put(url, data=json.dumps(params), headers=None)
+    #     except:
+    #         print("[HUE] Request timeout. Is the Hue Bridge reachable?")
+    #         pass
+
+    def _set_group_state(self, payload, group_id=None):
+        if (payload is None) or (group_id is None) :
+            return
+
+        if len(group_id)>0:
+            for i in group_id:
+                self._put_group_state(i, payload)
+                time.sleep(.1)
+        else:
+            self._put_group_state(group_id, payload)
+        
+
+    def _put_group_state(self, group_id, payload):
+        print("[HUE] Setting scene for group "+ str(group_id) + ": " + str(payload))
+
         try:
-            for light_id in light_ids:
-                self._post_state(params, light_id)
-                time.sleep(0.2)
+            url = "{}/{}/action".format(self.groups_endpoint, group_id)
+            res = requests.put(url, data=json.dumps(payload), headers=None)
+            print("[HUE] payload: "+json.dumps(payload))
+            print(res.text)
         except Exception as e:
-            return
-
-    def _post_state(self, params, light_id):
-        """ Post a state update to a given light.
-
-        :param params: Philips Hue request parameters.
-        :param light_id: Philips Hue light ID.
-        """
-        if (light_id is None) or (params is None):
-            return
-
-        print("[HUE] Setting state for light " +
-              str(light_id) + ": " + str(params))
-        try:
-            url = "{}/{}/state".format(self.lights_endpoint, light_id)
-            requests.put(url, data=json.dumps(params), headers=None)
-        except:
+            print(e)
             print("[HUE] Request timeout. Is the Hue Bridge reachable?")
             pass
 
-    def _get_hue_saturation(self, color_name):
-        """ Transform a color name into a dictionary represenation
-            of a color, as expected by the Philips Hue API.
+    #### section -> get different info from bridge
 
-        :param color_name: A color name, e.g. "red" or "blue"
-        :return: A dictionary represenation of a color, as expected
-            by the Philips Hue API, e.g. {'hue': 65535, 'sat': 254, 'bri': 254}
-        """
-        hue = color_name.split('x')[0]
-        sat = color_name.split('x')[1]
-        return {'hue':hue , 'sat':sat}
-        #return self.colormap.get(color_name, {'hue': 0, 'sat': 0})
+    def _get_group_brightness(self, group_id):
+        url = "{}/{}/".format(self.groups_endpoint, group_id)
+
+        if len(group_id)>0
+            
+            for i in group_id:
+                url = "{}/{}/".format(self.groups_endpoint, i)
+                res.append(requests.get(url).json().get("action")["bri"])
+            
+            return res
+
+        url = "{}/{}/".format(self.groups_endpoint, group_id)
+        return requests.get(url).json().get("action")["bri"]
+        
+
+    def _get_group_id_from_room(self, room=None):
+        if room is not None:
+            room = room.lower()
+
+        if room is None:
+            return self._get_all_group_ids()
+
+        if self.roomName_roomId.get(room) is None:
+            return
+
+        return self.roomName_roomId[room]
+        
+
+    def _get_all_group_ids(self):
+        groups = requests.get(self.groups_endpoint).json()
+        return groups.keys()
 
     def _get_lights_config(self, light_ids):
         """ Make a get request to get infos about the current state of the given lights """
@@ -158,11 +229,12 @@ class SnipsHue:
         lights = requests.get(self.lights_endpoint).json()
         names = [(key, value.get("name")) for key, value in lights.iteritems()]
         return  names
+
     def _get_light_ids_from_room(self, room):
         """ Returns the list of lights in a [room] or all light_ids if [room] is None """
-
         if room is not None:
             room = room.lower()
+
         if room is None or self.lights_from_room.get(room) is None:
             return self._get_all_lights()
 
@@ -177,7 +249,31 @@ class SnipsHue:
             if group.get("class") is not None:
                 ids_from_room[str.lower(str(group["class"]))] = [str(x) for x in group["lights"]]
             if group.get("name") is not None:
-                    ids_from_room[str.lower(str(group["name"].encode('utf-8')))] = [str(x) for x in group["lights"]]
+                ids_from_room[str.lower(str(group["name"].encode('utf-8')))] = [str(x) for x in group["lights"]]
         print "[HUE] Available rooms: \n" + ("\n".join(ids_from_room.keys()))
 
         return ids_from_room
+
+    def _get_rooms_id(self):
+        groups = requests.get(self.groups_endpoint).json()
+        ids_from_room = {}
+        for key, value in groups.iteritems():
+            group = value
+            if group.get("class") is not None:
+                ids_from_room[str.lower(str(group["class"]))] = str(key)
+            if group.get("name") is not None:
+                ids_from_room[str.lower(str(group["name"].encode('utf-8')))] = str(key)
+                # colletc room name, nlu injection
+
+        return ids_from_room
+
+    # def _create_scenes(self, scene_name, light_ids):
+    #     """ Create a specified [scene_name] to [light_ids], return the id of new scene """
+    #     res = requests.post(self.scenes_endpoint, json.dumps({"name": scene_name, "lights":light_ids, "recycle": True}), headers=None).json()
+    #     print res
+    #     return res[0].get("success").get("id")
+    
+
+
+
+

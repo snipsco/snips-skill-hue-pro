@@ -1,5 +1,3 @@
-# -*-: coding utf-8 -*-
-""" Philips Hue skill for Snips. """
 
 import requests
 import json
@@ -8,7 +6,6 @@ import errno
 import sys
 
 cache_file_name = 'credentials.json'
-path_cache_folder = os.path.expanduser('~/.snips/philips_hue/')
 
 class HueSetup:
     """ Get or create infos to connect to Philips Hue """

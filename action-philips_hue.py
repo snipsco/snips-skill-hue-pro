@@ -48,8 +48,6 @@ class Skill:
         self.thread_handler.start_run_loop()
 
     def update_config(self, filename, data, hostname, code):
-        if not os.path.exists(CONFIG_INI_DIR):
-                os.makedirs(CONFIG_INI_DIR)
         if 'secret' not in data or data['secret'] is None:
             data['secret'] = {}
         data['secret']['hostname'] = hostname
@@ -73,41 +71,42 @@ class Skill:
         return house_rooms
     def extract_percentage(self, intent_message, default_percentage):
         percentage = default_percentage
-        if intent_message.slots.intensity_percent:
-            number = intent_message.slots.intensity_percent.first()
+        if intent_message.slots.percent:
+            percentage = intent_message.slots.percent.first()
         if percentage < 0:
             percentage = 0
         if percentage > 100:
             percentage = 100
         return percentage
+
     def extract_color(self, intent_message):
         color_code = None
         if intent_message.slots.color:
-            res = intent_message.slots.color.first().value
+            color_code = intent_message.slots.color.first().value
         return color_code
     def extract_scene(self, intent_message):
-        scene = None
+        scene_code = None
         if intent_message.slots.scene:
-            scene = intent_message.slots.scene.first().value
-        return scene
+            scene_code = intent_message.slots.scene.first().value
+        return scene_code
     ####    section -> handlers of intents
     def callback(self, hermes, intent_message):
+        print("[HUE] Received")
         rooms = self.extract_house_rooms(intent_message)
-
-        if intent_message.intent.intent_name == 'turnOn'
-            self.queue.put()
-        if intent_message.intent.intent_name == 'turnOff'
-            self.queue.put()
-        if intent_message.intent.intent_name == 'setBrightness'
-            self.queue.put()
-        if intent_message.intent.intent_name == 'setColor'
-            self.queue.put()
-        if intent_message.intent.intent_name == 'setScene'
-            self.queue.put()
-        if intent_message.intent.intent_name == 'shiftUp'
-            self.queue.put()
-        if intent_message.intent.intent_name == 'shiftDown'
-            self.queue.put()
+        if intent_message.intent.intent_name == 'coorfang:turnOn':
+            self.queue.put(self.turn_on(hermes, intent_message, rooms))
+        if intent_message.intent.intent_name == 'coorfang:turnOff':
+            self.queue.put(self.turn_off(hermes, intent_message, rooms))
+        if intent_message.intent.intent_name == 'coorfang:setBrightness':
+            self.queue.put(self.set_brightness(hermes, intent_message, rooms))
+        if intent_message.intent.intent_name == 'coorfang:setColor':
+            self.queue.put(self.set_color(hermes, intent_message, rooms))
+        if intent_message.intent.intent_name == 'coorfang:setScene':
+            self.queue.put(self.set_scene(hermes, intent_message, rooms))
+        if intent_message.intent.intent_name == 'coorfang:shiftUp':
+            self.queue.put(self.shift_up(hermes, intent_message, rooms))
+        if intent_message.intent.intent_name == 'coorfang:shiftDown':
+            self.queue.put(self.shift_down(hermes, intent_message, rooms))
 
     def turn_on(self, hermes, intent_message, rooms):
         if len(rooms) > 0:
@@ -129,51 +128,55 @@ class Skill:
         percent = self.extract_percentage(intent_message, 80)
         if len(rooms) > 0:
             for room in rooms:
-                self.snipshue.light_brightness(room, percent)
+                self.snipshue.light_brightness(percent, room)
         else:
-            self.snipshue.light_brightness(None, percent)
+            self.snipshue.light_brightness(percent, None)
         self.terminate_feedback(hermes, intent_message)
 
     def set_color(self, hermes, intent_message, rooms):
         color = self.extract_color(intent_message)
+
+        print color
+        print type(color)
+
         if len(rooms) > 0:
             for room in rooms:
-                self.snipshue.light_color(room, color)
+                self.snipshue.light_color(color, room)
         else:
-            self.snipshue.light_color(None, color)
+            self.snipshue.light_color(color, None)
+
         self.terminate_feedback(hermes, intent_message)
 
     def set_scene(self, hermes, intent_message, rooms):
         scene = self.extract_scene(intent_message)
         if len(rooms) > 0:
             for room in rooms:
-                self.snipshue.light_scene(room, scene)
+                self.snipshue.light_scene(scene, room)
         else:
-            self.snipshue.light_scene(None, scene)
+            self.snipshue.light_scene(scene, None)
         self.terminate_feedback(hermes, intent_message)
 
     def shift_up(self, hermes, intent_message, rooms):
         percent = self.extract_percentage(intent_message, 20)
-        lights_turn_up(self, number, rooms):
         if len(rooms) > 0:
             for room in rooms:
-                self.snipshue.light_up(room, percent)
+                self.snipshue.light_up(percent, room)
         else:
-            self.snipshue.light_up(None, percent)
+            self.snipshue.light_up(percent, None)
         self.terminate_feedback(hermes, intent_message)
 
     def shift_down(self, hermes, intent_message, rooms):
         percent = self.extract_percentage(intent_message, 20)
         if len(rooms) > 0:
             for room in rooms:
-                self.snipshue.light_down(room, percent)
+                self.snipshue.light_down(percent, room)
         else:
-            self.snipshue.light_down(None, percent)
+            self.snipshue.light_down(percent, None)
         self.terminate_feedback(hermes, intent_message)
 
-    ####    section -> feedback reply
+    ####    section -> feedback reply // future function
     def terminate_feedback(self, hermes, intent_message, mode='default'):
-        if mode='default':
+        if mode == 'default':
             hermes.publish_end_session(intent_message.session_id, None)
         else:
             #### more design
