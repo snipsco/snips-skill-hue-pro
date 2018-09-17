@@ -111,24 +111,27 @@ class Skill_Hue:
     def turn_on(self, hermes, intent_message, rooms):
         if len(rooms) > 0:
             for room in rooms:
-                self.snipshue.light_on(room)
+                self.snipshue.light_on(room.lower())
         else:
-            self.snipshue.light_on(None)
+            self.snipshue.light_on_all()
         self.terminate_feedback(hermes, intent_message)
     def turn_off(self, hermes, intent_message, rooms):
         if len(rooms) > 0:
             for room in rooms:
-                self.snipshue.light_off(room)
+                self.snipshue.light_off(room.lower())
         else:
-            self.snipshue.light_off(None)
+            self.snipshue.light_off_all()
         self.terminate_feedback(hermes, intent_message)
     def set_brightness(self, hermes, intent_message, rooms):
-        percent = self.extract_percentage(intent_message, 80)
+        percent = self.extract_percentage(intent_message, None)
+        if percent is None:
+            self.terminate_feedback(hermes, intent_message)
+            return
         if len(rooms) > 0:
             for room in rooms:
-                self.snipshue.light_brightness(percent, room)
+                self.snipshue.light_brightness(percent, room.lower())
         else:
-            self.snipshue.light_brightness(percent, None)
+            self.snipshue.light_brightness_all(percent)
         self.terminate_feedback(hermes, intent_message)
     def set_color(self, hermes, intent_message, rooms):
         color = self.extract_color(intent_message)
@@ -137,9 +140,10 @@ class Skill_Hue:
             return 
         if len(rooms) > 0:
             for room in rooms:
-                self.snipshue.light_color(color, room)
+                self.snipshue.light_color(color, room.lower())
         else:
-            self.snipshue.light_color(color, None)
+
+            self.snipshue.light_color_all(color)
         self.terminate_feedback(hermes, intent_message)
 
     def set_scene(self, hermes, intent_message, rooms):
@@ -149,27 +153,27 @@ class Skill_Hue:
             return 
         if len(rooms) > 0:
             for room in rooms:
-                self.snipshue.light_scene(scene, room)
+                self.snipshue.light_scene(scene, room.lower())
         else:
-            self.snipshue.light_scene(scene, None)
+            self.snipshue.light_scene_all(scene)
         self.terminate_feedback(hermes, intent_message)
 
     def shift_up(self, hermes, intent_message, rooms):
         percent = self.extract_percentage(intent_message, 20)
-        # if len(rooms) > 0:
-        #     for room in rooms:
-        #         self.snipshue.light_up(percent, room)
-        # else:
-        #     self.snipshue.light_up(percent, None)
+        if len(rooms) > 0:
+            for room in rooms:
+                self.snipshue.light_up(percent, room.lower())
+        else:
+            self.snipshue.light_up_all(percent)
         self.terminate_feedback(hermes, intent_message)
 
     def shift_down(self, hermes, intent_message, rooms):
         percent = self.extract_percentage(intent_message, 20)
         # if len(rooms) > 0:
         #     for room in rooms:
-        #         self.snipshue.light_down(percent, room)
+        #         self.snipshue.light_down(percent, room.lower())
         # else:
-        #     self.snipshue.light_down(percent, None)
+        #     self.snipshue.light_down_all(percent)
         self.terminate_feedback(hermes, intent_message)
 
     ####    section -> feedback reply // future function
