@@ -81,33 +81,33 @@ class SnipsHue:
         
         self._set_group_state({"on": True, "bri":bri, "hue":hue, "sat":sat, "colormode":"xy"}, self._get_group_id_from_room(room))
 
-    def light_up(self, percent, room=None):
-        print ("[HUE] shift up")
-        """ Increase Philips Hue lights' intensity. """
+    # def light_up(self, percent, room=None):
+    #     print ("[HUE] shift up")
+    #     """ Increase Philips Hue lights' intensity. """
 
-        cur_brightness = self._get_group_brightness(self._get_group_id_from_room(room))
-        delt = int(round(percent * 254/100))
+    #     cur_brightness = self._get_group_brightness(self._get_group_id_from_room(room))
+    #     delt = int(round(percent * 254/100))
 
-        if len(self._get_group_id_from_room(room)>0):
+    #     if len(self._get_group_id_from_room(room)>0):
             
-        for key,val in cur_brightness:
-            new_bri = val + delt
+    #     for key,val in cur_brightness:
+    #         new_bri = val + delt
 
-            if new_bri > 254:
-                new_bri = 254
-            if new_bri < 0:
-                new_bri = 0
+    #         if new_bri > 254:
+    #             new_bri = 254
+    #         if new_bri < 0:
+    #             new_bri = 0
  
-            self._put_group_state({"on": True, "bri": new_bri}, self._get_group_id_from_room(room)[key])
+    #         self._put_group_state({"on": True, "bri": new_bri}, self._get_group_id_from_room(room)[key])
 
-        new_bri = bri + delt
+    #     new_bri = bri + delt
 
-        if new_bri > 254:
-            new_bri = 254
-        if new_bri < 0:
-            new_bri = 0
+    #     if new_bri > 254:
+    #         new_bri = 254
+    #     if new_bri < 0:
+    #         new_bri = 0
 
-        self._put_group_state({"on": True, "bri": new_bri}, self._get_group_id_from_room(room))
+    #     self._put_group_state({"on": True, "bri": new_bri}, self._get_group_id_from_room(room))
 
     # def light_down(self, perentage, room=None):
     #     print ("[HUE] shift down")
@@ -180,19 +180,19 @@ class SnipsHue:
 
     #### section -> get different info from bridge
 
-    def _get_group_brightness(self, group_id):
-        url = "{}/{}/".format(self.groups_endpoint, group_id)
+    # def _get_group_brightness(self, group_id):
+    #     url = "{}/{}/".format(self.groups_endpoint, group_id)
 
-        if len(group_id)>0
+    #     if len(group_id)>0
             
-            for i in group_id:
-                url = "{}/{}/".format(self.groups_endpoint, i)
-                res.append(requests.get(url).json().get("action")["bri"])
+    #         for i in group_id:
+    #             url = "{}/{}/".format(self.groups_endpoint, i)
+    #             res.append(requests.get(url).json().get("action")["bri"])
             
-            return res
+    #         return res
 
-        url = "{}/{}/".format(self.groups_endpoint, group_id)
-        return requests.get(url).json().get("action")["bri"]
+    #     url = "{}/{}/".format(self.groups_endpoint, group_id)
+    #     return requests.get(url).json().get("action")["bri"]
         
 
     def _get_group_id_from_room(self, room=None):

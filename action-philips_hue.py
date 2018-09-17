@@ -19,7 +19,7 @@ API_KEY = "api_key"
 _id = "snips-skill-hue"
 
 
-class Skill:
+class Skill_Hue:
     def __init__(self):
         try:
             config = SnipsConfigParser.read_configuration_file(CONFIG_INI)
@@ -78,7 +78,6 @@ class Skill:
         if percentage > 100:
             percentage = 100
         return percentage
-
     def extract_color(self, intent_message):
         color_code = None
         if intent_message.slots.color:
@@ -92,6 +91,7 @@ class Skill:
     ####    section -> handlers of intents
     def callback(self, hermes, intent_message):
         print("[HUE] Received")
+        ## all the intents have a house_room slot, extract here
         rooms = self.extract_house_rooms(intent_message)
         if intent_message.intent.intent_name == 'coorfang:turnOn':
             self.queue.put(self.turn_on(hermes, intent_message, rooms))
@@ -115,7 +115,6 @@ class Skill:
         else:
             self.snipshue.light_on(None)
         self.terminate_feedback(hermes, intent_message)
-
     def turn_off(self, hermes, intent_message, rooms):
         if len(rooms) > 0:
             for room in rooms:
@@ -123,7 +122,6 @@ class Skill:
         else:
             self.snipshue.light_off(None)
         self.terminate_feedback(hermes, intent_message)
-
     def set_brightness(self, hermes, intent_message, rooms):
         percent = self.extract_percentage(intent_message, 80)
         if len(rooms) > 0:
@@ -132,23 +130,23 @@ class Skill:
         else:
             self.snipshue.light_brightness(percent, None)
         self.terminate_feedback(hermes, intent_message)
-
     def set_color(self, hermes, intent_message, rooms):
         color = self.extract_color(intent_message)
-
-        print color
-        print type(color)
-
+        if color is None:
+            self.terminate_feedback(hermes, intent_message)
+            return 
         if len(rooms) > 0:
             for room in rooms:
                 self.snipshue.light_color(color, room)
         else:
             self.snipshue.light_color(color, None)
-
         self.terminate_feedback(hermes, intent_message)
 
     def set_scene(self, hermes, intent_message, rooms):
         scene = self.extract_scene(intent_message)
+        if scene is None:
+            self.terminate_feedback(hermes, intent_message)
+            return 
         if len(rooms) > 0:
             for room in rooms:
                 self.snipshue.light_scene(scene, room)
@@ -158,20 +156,20 @@ class Skill:
 
     def shift_up(self, hermes, intent_message, rooms):
         percent = self.extract_percentage(intent_message, 20)
-        if len(rooms) > 0:
-            for room in rooms:
-                self.snipshue.light_up(percent, room)
-        else:
-            self.snipshue.light_up(percent, None)
+        # if len(rooms) > 0:
+        #     for room in rooms:
+        #         self.snipshue.light_up(percent, room)
+        # else:
+        #     self.snipshue.light_up(percent, None)
         self.terminate_feedback(hermes, intent_message)
 
     def shift_down(self, hermes, intent_message, rooms):
         percent = self.extract_percentage(intent_message, 20)
-        if len(rooms) > 0:
-            for room in rooms:
-                self.snipshue.light_down(percent, room)
-        else:
-            self.snipshue.light_down(percent, None)
+        # if len(rooms) > 0:
+        #     for room in rooms:
+        #         self.snipshue.light_down(percent, room)
+        # else:
+        #     self.snipshue.light_down(percent, None)
         self.terminate_feedback(hermes, intent_message)
 
     ####    section -> feedback reply // future function
@@ -183,4 +181,4 @@ class Skill:
             hermes.publish_end_session(intent_message.session_id, None)
 
 if __name__ == "__main__":
-    Skill()
+    Skill_Hue()
