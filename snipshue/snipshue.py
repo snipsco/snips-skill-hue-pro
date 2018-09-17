@@ -79,7 +79,7 @@ class SnipsHue:
         hue = int(scene_code.split('x')[1])
         sat = int(scene_code.split('x')[2])
         
-        self._set_group_state({"on": True, "bri":bri, "hue":hue, "sat":sat}, self._get_group_id_from_room(room))
+        self._set_group_state({"on": True, "bri":bri, "hue":hue, "sat":sat, "colormode":"xy"}, self._get_group_id_from_room(room))
 
     def light_up(self, percent, room=None):
         print ("[HUE] shift up")
@@ -89,6 +89,7 @@ class SnipsHue:
         delt = int(round(percent * 254/100))
 
         if len(self._get_group_id_from_room(room)>0):
+            
         for key,val in cur_brightness:
             new_bri = val + delt
 
@@ -266,12 +267,6 @@ class SnipsHue:
                 # colletc room name, nlu injection
 
         return ids_from_room
-
-    # def _create_scenes(self, scene_name, light_ids):
-    #     """ Create a specified [scene_name] to [light_ids], return the id of new scene """
-    #     res = requests.post(self.scenes_endpoint, json.dumps({"name": scene_name, "lights":light_ids, "recycle": True}), headers=None).json()
-    #     print res
-    #     return res[0].get("success").get("id")
     
 
 
