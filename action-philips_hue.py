@@ -169,11 +169,11 @@ class Skill_Hue:
 
     def shift_down(self, hermes, intent_message, rooms):
         percent = self.extract_percentage(intent_message, 20)
-        # if len(rooms) > 0:
-        #     for room in rooms:
-        #         self.snipshue.light_down(percent, room.lower())
-        # else:
-        #     self.snipshue.light_down_all(percent)
+        if len(rooms) > 0:
+            for room in rooms:
+                self.snipshue.light_down(percent, room.lower())
+        else:
+            self.snipshue.light_down_all(percent)
         self.terminate_feedback(hermes, intent_message)
 
     ####    section -> feedback reply // future function

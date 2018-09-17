@@ -173,7 +173,12 @@ class SnipsHue:
             print(e)
             print("[HUE] Request timeout. Is the Hue Bridge reachable?")
             pass
-
+    def _get_group_brightness(self, group_id):
+        status = self._get_group_status(group_id)
+        if status["action"].get("bri"):
+            return status["action"]["bri"]
+        else:
+            return None
     def _is_group_on(self, group_id):
         status = self._get_group_status(group_id)
 
@@ -181,14 +186,6 @@ class SnipsHue:
             return True
         else:
             return False
-
-    def _get_group_brightness(self, group_id):
-        status = self._get_group_status(group_id)
-        if status["action"].get("bri"):
-            return status["action"]["bri"]
-        else:
-            return None
-
     def _get_room_id_table(self):
         groups = requests.get(self.groups_endpoint).json()
         room_id_table = {}
@@ -201,8 +198,3 @@ class SnipsHue:
                 # colletc room name, nlu injection
         print "[HUE] Available rooms: \n" + ("\n".join(room_id_table.keys()))
         return room_id_table
-
-
-
-
-
