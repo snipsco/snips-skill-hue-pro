@@ -19,7 +19,9 @@ If you are a ***developer***, all the parts will be helpful. Especially the foll
 > we suppose that you have already have [sam]() installed on your device. If not, please refer to [this page]()
 
 Run the following command to install assistant and its action code:
-```sam install assistant```
+```
+sam install assistant
+```
 Then select the assistant which contains `Smart Light - Hue` bundle.
 
 # Installation with sam (Action code only)
@@ -28,26 +30,37 @@ If you are a snips-app developer, you may need to only install the action code f
 > we suppose that you have already have [sam]() installed on your device. If not, please refer to [this page]()
 
 Run the following command to install from `snips-skill-hue-pro` git repo:
-```sam install actions -g https://github.com/snipsco/snips-skill-hue-pro.git```
+```
+sam install actions -g https://github.com/snipsco/snips-skill-hue-pro.git
+```
 
 Then `sam` will take care of the dependencies installation and put the skill at path `/var/lib/snips/skills/`. It will be run by the `snips-skill-server` component automatically.
 
 # Manual installation (Action code only)
 If you do not run your snips assistant on a `armv7l` or `armv6l` micro computer,`sam` will not work. But you can manually clone the skill repo to `/var/lib/snips/skills/` directory where the `snips-skill-server` based on. Please do:
-```cd /var/lib/snips/skills/```
+```
+cd /var/lib/snips/skills/
+```
 Then run: 
-```git cloen https://github.com/snipsco/snips-skill-hue-pro.git```
+```
+git cloen https://github.com/snipsco/snips-skill-hue-pro.git
+```
 Go to action code directory
-```cd snips-skill-hue-pro```
+```
+cd snips-skill-hue-pro
+```
 Install:
 > To be able to run the following code, you need to have `virtualenv` installed, if not please refer to [this page](https://virtualenv.pypa.io/en/stable/installation/)
 
-```sudo ./setup.sh```
+```
+sudo ./setup.sh
+```
 
 
 
 # Intents handler design
 | Intent Name | turnOn |
+| --- | --- |
 | Slots | `house_room` |
 | Purpose | Turn on the light |
 
