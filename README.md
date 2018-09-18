@@ -56,9 +56,53 @@ Install:
 sudo ./setup.sh
 ```
 
+# Bundle design
+
+When design an intent, please follow the clean code rules in your mind. Which means that you should name your intent and its slots properly, so that a third person beyound you and your user can also understant it.
+
+This table represent the bundle design of `Smart Light - Hue` :
+
+| Intent | Slots | Description | 
+| --- | --- | --- |
+| turnOn | `house_room` | Turn on the light |
+| turnOff| `house_room` | Turn off the light |
+| setBrightness| `house_room` `percent` | Set the brightness |
+| setColor| `house_room` `color` | Set the color |
+| setScene| `house_room` `scene` | Set the light mode |
+| shiftUp| `house_room` `percent` | Increase brightness |
+| shiftDown| `house_room` `percent` | Decrease brightness |
+
+# Coding archtecture 
+
+There are mainly two parts of code required. One for handling the intents from mqtt bus, which usually named like `action-{{action_name}.py`. The other one is usually the `class` of the devices, which contains all the functional methods/ attributes.
+
+In this example we have `action-philips_hue.py` and `snipshue.py`. 
 
 
-# Intents handler design
+# Default handler example for this bundle
+
+As we may have different default situation of slots, this section will explain the strategy used by this action code. There is no sepcific rule to handle this, so pelase refer to your usecase to make your design choice.
+
+There are typically 3 different slots type in this bundle design. Different types need to be handled in different ways. 
+
+### house_room (All the intent)
+This slot exist in all the intents of this bundle, it is used to indicate the location of operation. 
+
+As most of the user will set their room light by saying the room in the query, so we have made the following chart to explain what will happen under different defaults. 
+
+[flow chart]()
+
+### percent (shiftUp, shiftDown)
+This slot exist in the intent `shiftUp` and `shiftDown` , it is used to indicate the amount of the brightness change. 
+
+We can say both "***please give me more ligth***" or "***turn up the light by 50%***"(based on the current brightness, add 50% of max more brightness). So we have made the following strategy to handle it.
+
+[flow chart]()
+
+### percent (setBrightness), scene, color
+All of the 3 slots exist in the intent for setting this info, so it does not make sense to have a `setColor` / `setScene` / `setBrightness` intent detected but there is no key info provided. To handle this kind of defaults, we decided that either to make this slot mandatory when design the intnet or ignore these situation like nothing happened.
+
+
 | Intent Name | turnOn |
 | --- | --- |
 | Slots | `house_room` |
