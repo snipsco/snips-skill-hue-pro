@@ -76,14 +76,31 @@ This table represent the bundle design of `Smart Light - Hue` :
 
 There are mainly two parts of code required. One for handling the intents from mqtt bus, which usually named like `action-{{action_name}.py`. The other one is usually the `class` of the devices, which contains all the functional methods/ attributes.
 
-In this example we have `action-philips_hue.py` and `snipshue.py`. 
+In this example we have `action-philips_hue.py` and `snipshue.py`. Moreover, there is a `snipshelpers` directory, which contain `config_parser` and `thread_handler` class. This two class are provided in the action code template with in `action-{{action_name}.py` file. 
 
+All the necessary files are listed below: 
+```
+└── snips-skill-hue-pro								
+    ├── action-philips_hue.py 		# main handler for intents
+    ├── config.ini 					# app configuration
+    ├── requirements.txt 			# requirements for dependencies
+    ├── setup.sh 					# setup script
+    ├── snipshelpers 				# useful tools
+    │   ├── __init__.py 		
+    │   ├── config_parser.py
+    │   ├── singleton.py
+    │   └── thread_handler.py
+    └── snipshue 					# snipshue class
+        ├── __init__.py
+        ├── hue_setup.py
+        └── snipshue.py
+```
 
-# Default handler example for this bundle
+# Default handling example for this bundle
 
-As we may have different default situation of slots, this section will explain the strategy used by this action code. There is no sepcific rule to handle this, so pelase refer to your usecase to make your design choice.
+As we may have different default situation of slots, this section will explain the strategy used by this action code. There is no sepcific rule to handle this, so pelase refer to your usecase when make your design choice.
 
-There are typically 3 different slots type in this bundle design. Different types need to be handled in different ways. 
+There are typically 3 different slot types in this bundle design. Different types need to be handled in different ways. 
 
 ### house_room (All the intent)
 This slot exist in all the intents of this bundle, it is used to indicate the location of operation. 
@@ -95,7 +112,7 @@ As most of the user will set their room light by saying the room in the query, s
 ### percent (shiftUp, shiftDown)
 This slot exist in the intent `shiftUp` and `shiftDown` , it is used to indicate the amount of the brightness change. 
 
-We can say both "***please give me more ligth***" or "***turn up the light by 50%***"(based on the current brightness, add 50% of max more brightness). So we have made the following strategy to handle it.
+We can say both "***please give me more ligth***" or "***turn up the light by 50% ***"(based on the current brightness, add 50% of max more brightness). So we have made the following strategy to handle it.
 
 [flow chart]()
 
