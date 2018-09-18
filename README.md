@@ -81,16 +81,16 @@ In this example we have `action-philips_hue.py` and `snipshue.py`. Moreover, the
 All the necessary files are listed below: 
 ```
 └── snips-skill-hue-pro								
-    ├── action-philips_hue.py 		# main handler for intents
-    ├── config.ini 					# app configuration
-    ├── requirements.txt 			# requirements for dependencies
-    ├── setup.sh 					# setup script
-    ├── snipshelpers 				# useful tools
+    ├── action-philips_hue.py       # main handler for intents
+    ├── config.ini                  # app configuration
+    ├── requirements.txt            # requirements for dependencies
+    ├── setup.sh                    # setup script
+    ├── snipshelpers                # useful tools
     │   ├── __init__.py 		
     │   ├── config_parser.py
     │   ├── singleton.py
     │   └── thread_handler.py
-    └── snipshue 					# snipshue class
+    └── snipshue                    # snipshue class
         ├── __init__.py
         ├── hue_setup.py
         └── snipshue.py
