@@ -2,7 +2,7 @@
 
 This skill is designed for Philips Hue smart lights. It allows you to control the light in the different rooms/ groups by using your voice. This skill support color control/ built-in scene control/ brightness control. The basic control unit is a group(room). More functionality, for e.g. to control each individual light/ more customized scenes, please follow the developing section to customize your own bundle and app.
 
-# Useage of the documentation
+# Usage of the documentation
 The documentation is made for both end-user and voice app developer.
 
 If you are an ***end-user***, you may only read the following sections:
@@ -74,9 +74,9 @@ This table represent the bundle design of `Smart Light - Hue` :
 
 # Coding archtecture 
 
-There are mainly two parts of code required. One for handling the intents from mqtt bus, which usually named like `action-{{action_name}.py`. The other one is usually the `class` of the devices, which contains all the functional methods/ attributes.
+There are mainly two parts of code required. One for handling the intents from the mqtt bus, which usually named `action-{{action_name}.py`. The other one is usually the `class` of the devices, which contains all the functional methods/ attributes.
 
-In this example we have `action-philips_hue.py` and `snipshue.py`. Moreover, there is a `snipshelpers` directory, which contain `config_parser` and `thread_handler` class. This two class are provided in the action code template with in `action-{{action_name}.py` file. 
+In this example we have `action-philips_hue.py` and `snipshue.py`. Moreover, there is a `snipshelpers` directory, which contains `config_parser` and `thread_handler` class. This two class are provided in the action code template within `action-{{action_name}.py` file. 
 
 All the necessary files are listed below: 
 ```
@@ -98,25 +98,27 @@ All the necessary files are listed below:
 
 # Default handling example for this bundle
 
-As we may have different default situation of slots, this section will explain the strategy used by this action code. There is no sepcific rule to handle this, so pelase refer to your usecase when make your design choice.
+As we may have different default situation of slots, this section will explain the strategy used by this action code. There is no specific rule to handle this, so please refer to your use-case when making your design choice.
 
 There are typically 3 different slot types in this bundle design. Different types need to be handled in different ways. 
 
 ### house_room (All the intent)
-This slot exist in all the intents of this bundle, it is used to indicate the location of operation. 
+This slot exists in all the intents of this bundle, it is used to indicate the location of operation. 
 
 As most of the user will set their room light by saying the room in the query, so we have made the following chart to explain what will happen under different defaults. 
 
 [flow chart]()
 
-### percent (shiftUp, shiftDown)
-This slot exist in the intent `shiftUp` and `shiftDown` , it is used to indicate the amount of the brightness change. 
+> If you are targeting the user who is using the satellite configuration, the default `house_room` value also can be the `siteId` of the audio device. 
 
-We can say both "***please give me more ligth***" or "***turn up the light by 50% ***"(based on the current brightness, add 50% of max more brightness). So we have made the following strategy to handle it.
+### percent (shiftUp, shiftDown)
+This slot exists in the intent `shiftUp` and `shiftDown`, it is used to indicate the amount of the brightness change. 
+
+We can say both "***please make room lighter***" or "***turn up the light by 50% ***"(based on the current brightness, add 50% of max more brightness). So we have made the following strategy to handle it.
 
 [flow chart]()
 
 ### percent (setBrightness), scene, color
-All of the 3 slots exist in the intent for setting this info, so it does not make sense to have a `setColor` / `setScene` / `setBrightness` intent detected but there is no key info provided. To handle this kind of defaults, we decided that either to make this slot mandatory when design the intnet or ignore these situation like nothing happened.
+All of the 3 slots exist in the intent for setting this info, so it does not make sense to have a `setColor` / `setScene` / `setBrightness` intent detected but there is no key info provided. To handle this kind of defaults, we decided that either make this slot mandatory when designing the intent or ignore this situation as nothing happened.
 
 

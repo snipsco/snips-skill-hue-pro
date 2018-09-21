@@ -2,14 +2,17 @@
 # -*- coding: utf-8 -*-
 
 from hermes_python.hermes import Hermes
-import  os
+import os
 from snipshue.snipshue import SnipsHue
 from snipshelpers.thread_handler import ThreadHandler
 from snipshelpers.config_parser import SnipsConfigParser
 import Queue
 
 CONFIGURATION_ENCODING_FORMAT = "utf-8"
+
 CONFIG_INI =  "config.ini"
+CACHE_INI = expanduser("~/.hue_cache/cache.ini")
+CONFIG_INI_DIR =  expanduser("~/.hue_cache/")
 
 MQTT_IP_ADDR = "localhost"
 MQTT_PORT = 1883
@@ -41,13 +44,15 @@ class Skill_Hue:
         self.snipshue = SnipsHue(hostname, code)
         hostname = self.snipshue.hostname
         code  = self.snipshue.username
-        self.update_config(CONFIG_INI, config, hostname, code)
+        self.update_config(CACHE_INI, config, hostname, code)
         self.queue = Queue.Queue()
         self.thread_handler = ThreadHandler()
         self.thread_handler.run(target=self.start_blocking)
         self.thread_handler.start_run_loop()
 
     def update_config(self, filename, data, hostname, code):
+        if not os.path.exists(CACHE_INI_DIR):
+                os.makedirs(CACHE_INI_DIR)
         if 'secret' not in data or data['secret'] is None:
             data['secret'] = {}
         data['secret']['hostname'] = hostname
@@ -65,19 +70,21 @@ class Skill_Hue:
     ####    section -> extraction of slot value
     def extract_house_rooms(self, intent_message):
         house_rooms = []
-        if intent_message.slots.house_room is not None:
-            for room in intent_message.slots.house_room:
-                house_rooms.append(room.slot_value.value.value)
+        if intent_message.slots.house_room:
+            for room in intent_message.slots.house_room.all():
+                print type(room.value)
+                house_rooms.append(room.value)
         return house_rooms
     def extract_percentage(self, intent_message, default_percentage):
         percentage = default_percentage
         if intent_message.slots.percent:
-            percentage = intent_message.slots.percent.first()
+            percentage = intent_message.slots.percent.first().value
         if percentage < 0:
             percentage = 0
         if percentage > 100:
             percentage = 100
         return percentage
+
     def extract_color(self, intent_message):
         color_code = None
         if intent_message.slots.color:
@@ -179,10 +186,10 @@ class Skill_Hue:
     ####    section -> feedback reply // future function
     def terminate_feedback(self, hermes, intent_message, mode='default'):
         if mode == 'default':
-            hermes.publish_end_session(intent_message.session_id, None)
+            hermes.publish_end_session(intent_message.session_id, "")
         else:
             #### more design
-            hermes.publish_end_session(intent_message.session_id, None)
+            hermes.publish_end_session(intent_message.session_id, "")
 
 if __name__ == "__main__":
     Skill_Hue()

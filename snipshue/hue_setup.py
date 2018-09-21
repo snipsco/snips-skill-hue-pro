@@ -1,3 +1,5 @@
+# -*-: coding utf-8 -*-
+""" Philips Hue skill for Snips. """
 
 import requests
 import json
@@ -51,7 +53,7 @@ class HueSetup:
 
     def _connect_user(self, bridge_ip):
         created = False
-        print '/!\ Please, press the button on the Hue bridge'
+        print '[!] Please, press the button on the Hue bridge'
         while not created:
             payload = json.dumps({'devicetype': 'snipshue'})
             response = requests.post("http://" + bridge_ip + "/api", data=payload).json()

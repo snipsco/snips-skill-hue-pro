@@ -7,8 +7,6 @@ import time
 from hue_setup import HueSetup
 from hue_scene import HueScenes
 
-
-
 class SnipsHue:
     """ Philips Hue skill for Snips. """
 
@@ -44,7 +42,7 @@ class SnipsHue:
         if self.roomName_roomId.get(room) is None:
             return
         print ("[HUE] turn on")
-        self._put_group_state({"on": True, "bri": 200}, self.roomName_roomId[room])
+        self._put_group_state({"on": True, "bri": 200, "hue": 39392,"sat": 13}, self.roomName_roomId[room])
 
     def light_on_all(self):
         for room in self.roomName_roomId.keys():
@@ -107,9 +105,10 @@ class SnipsHue:
     def light_up(self, percent, room):
         if self.roomName_roomId.get(room) is None:
             return
-        print ("[HUE] shift up")
+        print ("[HUE] shift up, percent: "+ str(percent))
 
         cur_brightness = self._get_group_brightness(self.roomName_roomId[room])
+        print cur_brightness
         if cur_brightness is None:
             return
         delt = int(round(percent * 254/100))
@@ -130,7 +129,7 @@ class SnipsHue:
     def light_down(self, percent, room):
         if self.roomName_roomId.get(room) is None:
             return
-        print ("[HUE] shift down")
+        print ("[HUE] shift down, percent: "+ str(percent))
 
         cur_brightness = self._get_group_brightness(self.roomName_roomId[room])
         if cur_brightness is None:
