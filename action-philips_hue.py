@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from hermes_python.hermes import Hermes
+from os.path import expanduser
 import os
 from snipshue.snipshue import SnipsHue
 from snipshelpers.thread_handler import ThreadHandler
@@ -12,7 +13,7 @@ CONFIGURATION_ENCODING_FORMAT = "utf-8"
 
 CONFIG_INI =  "config.ini"
 CACHE_INI = expanduser("~/.hue_cache/cache.ini")
-CONFIG_INI_DIR =  expanduser("~/.hue_cache/")
+CACHE_INI_DIR =  expanduser("~/.hue_cache/")
 
 MQTT_IP_ADDR = "localhost"
 MQTT_PORT = 1883
