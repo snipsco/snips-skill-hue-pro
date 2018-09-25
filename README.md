@@ -6,12 +6,8 @@ This app is designed for Philips Hue smart lights. It allows a user to control l
 
 More functionality, for e.g. controling each individual light/ more bespoke scenes, please follow the "developer" section in order to customise your own bundle and action code.
 
-<<<<<<< HEAD
 # Usage of the documentation
 The documentation is made for both end-user and voice app developer.
-=======
-# Useage of the documentation
->>>>>>> 6ac1e2bada23dff56e44d27dec8e2f687ff52941
 
 If you are a ***maker***, you may only read the following sections:
 - Installation with sam
