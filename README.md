@@ -106,41 +106,23 @@ As we may have different default situation of slots, this section will explain t
 
 There are typically 3 different slot types in this bundle design. Different types need to be handled in different ways. 
 
-<<<<<<< HEAD
-### house_room (All the intent)
-This slot exists in all the intents of this bundle, it is used to indicate the location of operation. 
-=======
 ### § `house_room` (All the intent)
-This slot exist in all the intents of this bundle, it is used to indicate the location of operation. 
->>>>>>> 6ac1e2bada23dff56e44d27dec8e2f687ff52941
+This slot exists in all the intents for this bundle, it is used to indicate the location of where the action should happen.
 
-As most of the user will set their room light by saying the room in the query, so we have made the following chart to explain what will happen under different defaults. 
+Most users will set their room light by pronouncing the room name in the query, so we have made the following chart to explain what will happen under different scenarios.
 
-
-<<<<<<< HEAD
-> If you are targeting the user who is using the satellite configuration, the default `house_room` value also can be the `siteId` of the audio device. 
-
-### percent (shiftUp, shiftDown)
-This slot exists in the intent `shiftUp` and `shiftDown`, it is used to indicate the amount of the brightness change. 
-
-We can say both "***please make room lighter***" or "***turn up the light by 50% ***"(based on the current brightness, add 50% of max more brightness). So we have made the following strategy to handle it.
-=======
 ![flow chart](https://blobscdn.gitbook.com/v0/b/gitbook-28427.appspot.com/o/assets%2F-L5OxUOD7uLDGd059vYc%2F-LMh4F4vYg2kUqQW15fY%2F-LMh843PseFasjCNDeu1%2Fimage.png?alt=media&token=b1f283c5-851c-4b5e-812e-93e766a3b0c7)
+
+> If you are targeting the user who is using the satellite configuration, the default `house_room` value also can be the `siteId` of the audio device. 
 
 ### § `percent` (shiftUp, shiftDown)
 This slot exist in the intent `shiftUp` and `shiftDown` , it is used to indicate the amount of the brightness change. 
 
 We can say both "***please give me more ligth***" or "***turn up the light by 50%***"(based on the current brightness, add 50% of max more brightness). So we have made the following strategy to handle it.
->>>>>>> 6ac1e2bada23dff56e44d27dec8e2f687ff52941
 
 ![flow chart](https://blobscdn.gitbook.com/v0/b/gitbook-28427.appspot.com/o/assets%2F-L5OxUOD7uLDGd059vYc%2F-LMh4F4vYg2kUqQW15fY%2F-LMh8jtq500rdSXZ4UeE%2Fimage.png?alt=media&token=44e3b62c-b51f-40d5-9358-0001191f7445)
 
-<<<<<<< HEAD
-### percent (setBrightness), scene, color
-All of the 3 slots exist in the intent for setting this info, so it does not make sense to have a `setColor` / `setScene` / `setBrightness` intent detected but there is no key info provided. To handle this kind of defaults, we decided that either make this slot mandatory when designing the intent or ignore this situation as nothing happened.
-=======
 ### § `percent` (setBrightness), `scene`, `color`
 All of the 3 slots exist in the intent for setting this info, so it does not make sense to have a `setColor` / `setScene` / `setBrightness` intent detected but there is no key info provided. To handle this kind of defaults, we decided that either to make this slot mandatory when design the intnet or ignore these situation like nothing happened.
->>>>>>> 6ac1e2bada23dff56e44d27dec8e2f687ff52941
 
 
