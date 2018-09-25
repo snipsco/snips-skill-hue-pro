@@ -1,6 +1,6 @@
 # Introduction
 
-***The full documentation, please out [here](https://snips.gitbook.io/documentation/snips-app/smart-light-hue)***
+***The full documentation, please reach [here](https://snips.gitbook.io/documentation/snips-app/smart-light-hue)***
 
 This app is designed for Philips Hue smart lights. It allows a user to control lights in different rooms/ groups with Snips. This app supports color selection, built-in scenes, and brightness control. 
 
