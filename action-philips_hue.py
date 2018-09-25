@@ -100,19 +100,19 @@ class Skill_Hue:
         print("[HUE] Received")
         ## all the intents have a house_room slot, extract here
         rooms = self.extract_house_rooms(intent_message)
-        if intent_message.intent.intent_name == 'coorfang:turnOn':
+        if intent_message.intent.intent_name == 'turnOn':
             self.queue.put(self.turn_on(hermes, intent_message, rooms))
-        if intent_message.intent.intent_name == 'coorfang:turnOff':
+        if intent_message.intent.intent_name == 'turnOff':
             self.queue.put(self.turn_off(hermes, intent_message, rooms))
-        if intent_message.intent.intent_name == 'coorfang:setBrightness':
+        if intent_message.intent.intent_name == 'setBrightness':
             self.queue.put(self.set_brightness(hermes, intent_message, rooms))
-        if intent_message.intent.intent_name == 'coorfang:setColor':
+        if intent_message.intent.intent_name == 'setColor':
             self.queue.put(self.set_color(hermes, intent_message, rooms))
-        if intent_message.intent.intent_name == 'coorfang:setScene':
+        if intent_message.intent.intent_name == 'setScene':
             self.queue.put(self.set_scene(hermes, intent_message, rooms))
-        if intent_message.intent.intent_name == 'coorfang:shiftUp':
+        if intent_message.intent.intent_name == 'shiftUp':
             self.queue.put(self.shift_up(hermes, intent_message, rooms))
-        if intent_message.intent.intent_name == 'coorfang:shiftDown':
+        if intent_message.intent.intent_name == 'shiftDown':
             self.queue.put(self.shift_down(hermes, intent_message, rooms))
 
     def turn_on(self, hermes, intent_message, rooms):
