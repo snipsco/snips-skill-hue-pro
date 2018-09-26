@@ -31,12 +31,12 @@ class Skill_Hue:
             config = None
         hostname = None
         code = None
-        if config and config.get('secret') is not None:
-            if config.get('secret').get('hostname') is not None:
+        if config and config.get('secret', None) is not None:
+            if config.get('secret').get('hostname', None) is not None:
                 hostname = config.get('secret').get('hostname')
                 if hostname == "":
                     hostname = None
-            if config.get('secret').get(API_KEY) is not None:
+            if config.get('secret').get(API_KEY, None) is not None:
                 code = config.get('secret').get(API_KEY)
                 if code == "":
                     code = None
