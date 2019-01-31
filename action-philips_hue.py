@@ -101,19 +101,22 @@ class Skill_Hue:
         print("[HUE] Received")
         ## all the intents have a house_room slot, extract here
         rooms = self.extract_house_rooms(intent_message)
-        if intent_message.intent.intent_name == 'turnOn':
+        intent_name = intent_message.intent.intent_name
+        if ':' in intent_name:
+            intent_name = intent_name.split(":")[1]
+        if intent_name == 'turnOn':
             self.queue.put(self.turn_on(hermes, intent_message, rooms))
-        if intent_message.intent.intent_name == 'turnOff':
+        if intent_name == 'turnOff':
             self.queue.put(self.turn_off(hermes, intent_message, rooms))
-        if intent_message.intent.intent_name == 'setBrightness':
+        if intent_name == 'setBrightness':
             self.queue.put(self.set_brightness(hermes, intent_message, rooms))
-        if intent_message.intent.intent_name == 'setColor':
+        if intent_name == 'setColor':
             self.queue.put(self.set_color(hermes, intent_message, rooms))
-        if intent_message.intent.intent_name == 'setScene':
+        if intent_name == 'setScene':
             self.queue.put(self.set_scene(hermes, intent_message, rooms))
-        if intent_message.intent.intent_name == 'shiftUp':
+        if intent_name == 'shiftUp':
             self.queue.put(self.shift_up(hermes, intent_message, rooms))
-        if intent_message.intent.intent_name == 'shiftDown':
+        if intent_name == 'shiftDown':
             self.queue.put(self.shift_down(hermes, intent_message, rooms))
 
     def turn_on(self, hermes, intent_message, rooms):
