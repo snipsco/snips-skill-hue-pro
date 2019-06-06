@@ -6,7 +6,7 @@ This repository contains the code used by Smart Light - Hue bundle.
 
 ## User Guide
 
-***The full documentation, please reach [here](https://snips.gitbook.io/documentation/snips-app/smart-light-hue)***
+***The full documentation, please reach [here](https://docs.snips.ai/sample-apps/raspberry-pi-examples/smart-light-hue)***
 
 ## Contributing
 
